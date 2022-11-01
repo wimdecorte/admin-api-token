@@ -8,14 +8,15 @@ Required input:
 3) the password for the private key, can be null
 
 Example:
+```json
 {
 	"days": 7,
 	"name": "soliant04",
 	"password": "ets"
 }
-
+```
 Provided output (keys shortened for readability):
-
+```json
 {
   "privKey": "-----BEGIN ENCRYPTED PRIVATE KEY-----\nMIIJrTBXBgkqVSy0Hgc\n-----END ENCRYPTED PRIVATE KEY-----\n",
   "pubKey": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiGglsCAwEAAQ==\n-----END PUBLIC KEY-----\n",
@@ -25,6 +26,7 @@ Provided output (keys shortened for readability):
   "instructions": "don't forget to add the public key to FMS and name the entry exactly like JWT_name!",
   "pubKeyClean": "-----BEGIN PUBLIC KEY-----MIICIjANBgkqhkiG9w0iNYdJ904oAgoglsCAwEAAQ==-----END PUBLIC KEY-----"
 }
+```
 
 Paste pubKey into the FMS admin console and name the entry to what it says for JWT_name.
 Use JWT when calling the Admin API.
