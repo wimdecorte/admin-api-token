@@ -81,11 +81,11 @@ router.post('/generate', async function (req, res, next) {
         cipher: 'aes256',
         format: 'pem',
         passphrase: password,
-        type: 'pkcs1',
+        type: 'pkcs8',
       },
       publicKeyEncoding: {
         format: 'pem',
-        type: 'pkcs1',
+        type: 'spki', //type: 'pkcs1',
       },
     });
     return keys;
@@ -121,9 +121,11 @@ router.post('/generate', async function (req, res, next) {
             //console.log('Keys created - before JWT');
             privKey = keys.privateKey;
             pubKey = keys.publicKey;
+            let pubKeyClean = pubKey.replace(/\r?\n|\r/g, "");
             //console.log('private key: ' + privKey);
             //  now generate the JWT with that private key
             let result = generateJWT(privKey);
+            result.pubKeyClean = pubKeyClean;
             //console.log('after JWT');
             return res.status(200).json(result);
           });
@@ -143,6 +145,25 @@ router.post('/generate', async function (req, res, next) {
 
 
 });
+
+// =================================================================================================
+
+router.post('/jwt/decode', function (req, res, next) {
+  // check if body is json
+  if (!req.is('application/json')) {
+    res.status(400).send('Bad Request');
+    return;
+  }
+  let token = req.body.jwt;
+  var decoded = jwt.decode(token);
+  let utcSeconds = decoded.exp;
+  var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+  d.setUTCSeconds(utcSeconds);
+  decoded.expDate = d;
+  return res.status(200).json(decoded);
+});
+
+
 
 // =================================================================================================
 
