@@ -6,10 +6,6 @@ var crypto = require('crypto');
 var util = require('util');
 const generateKeyPairAsync = util.promisify(crypto.generateKeyPair);
 
-// to do
-// - consider using https://www.npmjs.com/package/keypair instead of keygen
-// but could be slow
-
 
 // =================================================================================================
 router.post('/generate', async function (req, res, next) {
