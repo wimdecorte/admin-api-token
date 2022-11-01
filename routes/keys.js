@@ -6,7 +6,9 @@ var keygen = require('ssh-keygen');
 var jwt = require('jsonwebtoken');
 require('dotenv').config()
 var crypto = require('crypto');
+var util = require('util');
 const generateKeyPairAsync = util.promisify(crypto.generateKeyPair);
+
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -33,7 +35,7 @@ router.post('/generate', async function (req, res, next) {
   let iss_name = req.body.name;
   let location = __dirname + '/foo_rsa';
   let comment = req.body.comment || '';
-  let password = req.body.password || ''; // false and undefined will convert to an empty pw
+  let password = req.body.password || undefined; // false and undefined will convert to an empty pw
   let method = req.body.method || 'crypto';
 
   let format = 'PEM'; // default is RFC4716
@@ -56,7 +58,8 @@ router.post('/generate', async function (req, res, next) {
       "aud": "fmsadminapi",
       "exp": Math.floor(Date.now() / 1000) + (days * 86400) // 86400 seconds in a day
     };
-    let token = jwt.sign(payload_data, privKey, { algorithm: 'RS256' });
+    let signWith = { key: privKey, passphrase: password };
+    let token = jwt.sign(payload_data, signWith, { algorithm: 'RS256' });
 
     // create the json envelope
     let result = {
@@ -71,13 +74,14 @@ router.post('/generate', async function (req, res, next) {
   }
 
   // generate the keys through crypto
-  async function generateSshKeys(passphrase) {
+  async function generateSshKeys() {
+    console.log('inside crypto function - password: ' + password);
     const keys = await generateKeyPairAsync('rsa', {
       modulusLength: size,
       privateKeyEncoding: {
         cipher: 'aes256',
         format: 'pem',
-        passphrase,
+        passphrase: password,
         type: 'pkcs1',
       },
       publicKeyEncoding: {
@@ -112,11 +116,16 @@ router.post('/generate', async function (req, res, next) {
   try {
     switch (method) {
       case 'crypto':
-        await generateSshKeys(password).then(
+        //console.log('Generating keys with crypto');
+        await generateSshKeys().then(
           (keys) => {
+            //console.log('Keys created - before JWT');
             privKey = keys.privateKey;
+            pubKey = keys.publicKey;
+            //console.log('private key: ' + privKey);
             //  now generate the JWT with that private key
             let result = generateJWT(privKey);
+            //console.log('after JWT');
             return res.status(200).json(result);
           });
         break;
