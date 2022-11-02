@@ -1,6 +1,8 @@
 NodeJS Express microserivce to generate the private/public key pair and the JWT token to access the FMS Admin API
 (new feature in FMS 19.6)
 
+See swagger documentation at the /apidoc endpoint
+
 Required input:
 
 1) the number of days you want this token to be valid for (will default to 365 if omitted)
