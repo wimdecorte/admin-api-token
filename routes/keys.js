@@ -116,4 +116,44 @@ router.post('/jwt/decode', function (req, res, next) {
 
 // =================================================================================================
 
+router.post('/SIWA/secret', function (req, res, next) {
+  // check if body is json
+  if (!req.is('application/json')) {
+    res.status(400).send('Bad Request');
+    return;
+  }
+  let key = req.body.key;
+  let team = req.body.team;
+  let client = req.body.client;
+  let key_id = req.body.key_id;
+
+  let payload_data = {
+    "iss": team,
+    "sub": client,
+    "iat": Math.floor(Date.now() / 1000),
+  };
+  let signWith = { key: key };
+  let token = jwt.sign(
+    payload_data,
+    signWith,
+    {
+      header: { "kid": key_id },
+      expiresIn: "180 days",
+      algorithm: 'ES256'
+    });
+
+  var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+  d.setUTCSeconds(token.exp);
+
+  // create the json envelope
+  let result = {
+    "client_secret": privKey,
+    "expires": d,
+  };
+  return res.status(200).json(result);
+});
+
+// =================================================================================================
+
+
 module.exports = router;
