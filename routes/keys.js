@@ -143,11 +143,13 @@ router.post('/SIWA/secret', function (req, res, next) {
     });
 
   var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
-  d.setUTCSeconds(token.exp);
+  var decoded = jwt.decode(token);
+  let utcSeconds = decoded.exp;
+  d.setUTCSeconds(utcSeconds);
 
   // create the json envelope
   let result = {
-    "client_secret": privKey,
+    "client_secret": token,
     "expires": d,
   };
   return res.status(200).json(result);

@@ -3,7 +3,9 @@ NodeJS Express microserivce to generate the private/public key pair and the JWT 
 
 See swagger documentation at the /apidoc endpoint
 
-Required input:
+## Admin API keypair + JWT token
+
+*Required input for /keys/generate endpoint*
 
 1) the number of days you want this token to be valid for (will default to 365 if omitted)
 2) the name of the token, you'll need to use this name in the FMS admin console, it's embedded in the JWT token
@@ -33,3 +35,28 @@ Provided output (keys shortened for readability):
 Paste pubKey into the FMS admin console and name the entry to what it says for JWT_name.
 Use JWT when calling the Admin API.
 Use pubKeyClean when using the Admin API to add this keypair programatically, for some reason the Admin API does not like the public key with line endings.
+
+## Sign-in With apple
+This requires you to generate a client secret using information from your Apple setup
+
+call /keys/SIWA/secret
+
+with a JSON payload as below.
+Note that the P8 key needs to have its line endings escaped properly
+```json
+{
+	"key": "-----BEGIN PRIVATE KEY-----\nMIGTAgEAM....Qpz2zlFmp866DAlm69R8r7Cv+6aK\nVNEPtdp5\n-----END PRIVATE KEY-----",
+	"team": "56A8.....",
+	"client": "com.wimdecorte.fms.ets.serviceid",
+	"key_id": "N5KY...."
+}
+```
+
+Generates a json result with your client secret (which is a JWT token) and it includes the expiry date (set to the max of 180 days)
+
+```json
+{
+	"client_secret": "eyJhbGciO....Z7gCgk5HV4vjDzyLLNY2Q",
+	"expires": "2023-05-02T20:17:32.000Z"
+}
+```
