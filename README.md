@@ -1,5 +1,7 @@
-NodeJS Express microserivce to generate the private/public key pair and the JWT token to access the FMS Admin API
+NodeJS Express microserivce to:
+1) generate the private/public key pair and the JWT token to access the FMS Admin API
 (new feature in FMS 19.6)
+2) generate the client secret when you configure FMS to use **Sign in with Apple**
 
 See swagger documentation at the /apidoc endpoint
 
